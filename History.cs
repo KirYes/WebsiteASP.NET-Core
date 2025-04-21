@@ -19,7 +19,7 @@ namespace WebApplication2
             var chatMessages = _store.GetOrAdd(userName, _ => InitiateChatMessages());
             chatMessages.Add(new AssistantChatMessage(message));
         }
-
+//d
         private IList<ChatMessage> InitiateChatMessages()
         {
             return new List<ChatMessage>
