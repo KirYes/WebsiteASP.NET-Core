@@ -23,8 +23,17 @@ a {
   border-color: #1861ac;
 }
 
+.navbar-brand {
+    color: black;
+    transition: all 0.2s ease-in-out;
+}
+
+header {
+    animation: fadeIn 2s;
+}
+
 .border-top {
-  border-top: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
 }
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
@@ -45,4 +54,14 @@ button.accept-policy {
   width: 100%;
   white-space: nowrap;
   line-height: 60px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

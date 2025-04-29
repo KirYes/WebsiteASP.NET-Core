@@ -4,6 +4,8 @@ using WebApplication2.Data;
 using WebApplication2.Models;
 using WebApplication2.Hubs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using WebApplication2.Services;
 
 namespace WebApplication2
 {
@@ -16,10 +18,12 @@ namespace WebApplication2
                 options.UseSqlServer(builder.Configuration.GetConnectionString("WebApplication2Context") ?? throw new InvalidOperationException("Connection string 'WebApplication2Context' not found.")));
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<WebApplication2Context>();
-
-         
-            // Add services to the container.
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+            builder.Services.AddSingleton<GameTimerService>();
+       
             builder.Services.AddRazorPages();
+       builder.Services.AddControllersWithViews();
             builder.Services.AddSignalR();
      builder.Services.AddAzureOpenAI(builder.Configuration);
 
@@ -49,6 +53,7 @@ namespace WebApplication2
             app.MapRazorPages()
                .WithStaticAssets();
             app.MapHub<ChatHub>("/chathub");
+            app.MapHub<GameHub>("/gamehub");
             app.Run();
         }
     }

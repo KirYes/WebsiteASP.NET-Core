@@ -1,0 +1,15 @@
+﻿@page
+@model WebApplication2.Pages.PlayModel
+@{
+	ViewData["Title"] = "Play";
+}
+
+<section>
+	<div id="race">
+		<button id="start-button">Start race</button>
+		<h2 id="timer">Timer: <span id="timer1">0</span> seconds</h2>
+		</div>
+	</section>
+
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="~/js/game.js"></script>
