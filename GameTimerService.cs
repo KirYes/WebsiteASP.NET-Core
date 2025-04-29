@@ -18,7 +18,7 @@ public class GameTimerService
     {
         _readyUsers.Add(connectionId);
 
-        if (_readyUsers.Count >= RequiredPlayers)
+        if (_readyUsers.Count == RequiredPlayers)
         {
             await StartRace();
         }
