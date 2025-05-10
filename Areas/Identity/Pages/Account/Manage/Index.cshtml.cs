@@ -56,6 +56,7 @@ namespace WebApplication2.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             /// 
+
             [Required]
             [Display(Name = "Username")]
             [StringLength(256)]
@@ -127,6 +128,11 @@ namespace WebApplication2.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            //if (Input.Name != user.Name)
+            //{
+            //    user.Name = Input.Name;
+            //}
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();

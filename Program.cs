@@ -24,6 +24,8 @@ namespace WebApplication2
        
             builder.Services.AddRazorPages();
        builder.Services.AddControllersWithViews();
+            builder.Services.AddControllers();
+           
             builder.Services.AddSignalR();
      builder.Services.AddAzureOpenAI(builder.Configuration);
 
@@ -46,9 +48,8 @@ namespace WebApplication2
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.MapControllers();
             app.UseAuthorization();
-
             app.MapStaticAssets();
             app.MapRazorPages()
                .WithStaticAssets();

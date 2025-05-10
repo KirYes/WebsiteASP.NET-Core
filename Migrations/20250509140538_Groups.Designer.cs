@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication2.Data;
 
@@ -11,9 +12,11 @@ using WebApplication2.Data;
 namespace WebApplication2.Migrations
 {
     [DbContext(typeof(WebApplication2Context))]
-    partial class WebApplication2ContextModelSnapshot : ModelSnapshot
+    [Migration("20250509140538_Groups")]
+    partial class Groups
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,13 +27,13 @@ namespace WebApplication2.Migrations
 
             modelBuilder.Entity("ConversationRoomUser", b =>
                 {
-                    b.Property<string>("RoomsRoomName")
+                    b.Property<string>("ConversationRoomsRoomName")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UsersUserName")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("RoomsRoomName", "UsersUserName");
+                    b.HasKey("ConversationRoomsRoomName", "UsersUserName");
 
                     b.HasIndex("UsersUserName");
 
@@ -343,7 +346,7 @@ namespace WebApplication2.Migrations
                 {
                     b.HasOne("WebApplication2.Models.ConversationRoom", null)
                         .WithMany()
-                        .HasForeignKey("RoomsRoomName")
+                        .HasForeignKey("ConversationRoomsRoomName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -15,8 +15,15 @@ namespace WebApplication2.Data
             : base(options)
         {
         }
-
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
         public DbSet<WebApplication2.Models.Movie> Movie { get; set; } = default!;
+        public DbSet<WebApplication2.Models.ChatMessage> Messages { get; set; } = default!;
+        public DbSet<WebApplication2.Models.User> Users { get; set; } = default!;
+        public DbSet<WebApplication2.Models.Connection> Connections { get; set; } = default!;
+        public DbSet<WebApplication2.Models.ConversationRoom> Rooms { get; set; } = default!;
     }
 }
 

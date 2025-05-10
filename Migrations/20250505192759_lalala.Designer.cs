@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApplication2.Data;
 
@@ -11,9 +12,11 @@ using WebApplication2.Data;
 namespace WebApplication2.Migrations
 {
     [DbContext(typeof(WebApplication2Context))]
-    partial class WebApplication2ContextModelSnapshot : ModelSnapshot
+    [Migration("20250505192759_lalala")]
+    partial class lalala
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace WebApplication2.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("ConversationRoomUser", b =>
-                {
-                    b.Property<string>("RoomsRoomName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UsersUserName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RoomsRoomName", "UsersUserName");
-
-                    b.HasIndex("UsersUserName");
-
-                    b.ToTable("ConversationRoomUser");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -263,38 +251,6 @@ namespace WebApplication2.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("WebApplication2.Models.Connection", b =>
-                {
-                    b.Property<string>("ConnectionId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("Connected")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserAgent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("ConnectionId");
-
-                    b.HasIndex("UserName");
-
-                    b.ToTable("Connections");
-                });
-
-            modelBuilder.Entity("WebApplication2.Models.ConversationRoom", b =>
-                {
-                    b.Property<string>("RoomName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RoomName");
-
-                    b.ToTable("Rooms");
-                });
-
             modelBuilder.Entity("WebApplication2.Models.Movie", b =>
                 {
                     b.Property<int>("ID")
@@ -327,31 +283,6 @@ namespace WebApplication2.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Movie");
-                });
-
-            modelBuilder.Entity("WebApplication2.Models.User", b =>
-                {
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserName");
-
-                    b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("ConversationRoomUser", b =>
-                {
-                    b.HasOne("WebApplication2.Models.ConversationRoom", null)
-                        .WithMany()
-                        .HasForeignKey("RoomsRoomName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WebApplication2.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersUserName")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -403,18 +334,6 @@ namespace WebApplication2.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("WebApplication2.Models.Connection", b =>
-                {
-                    b.HasOne("WebApplication2.Models.User", null)
-                        .WithMany("Connections")
-                        .HasForeignKey("UserName");
-                });
-
-            modelBuilder.Entity("WebApplication2.Models.User", b =>
-                {
-                    b.Navigation("Connections");
                 });
 #pragma warning restore 612, 618
         }
