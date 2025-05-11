@@ -64,6 +64,10 @@ section {
     flex-direction: row;
 }
 
+.grouch{
+    margin: 5px;
+}
+
 .end {
     display: flex;
     flex-direction: row;
@@ -74,6 +78,7 @@ section {
     justify-content: center;
     align-content: center;
     align-items: center;
+    margin: 0 auto;
 }
 #messagesList {
     display: flex;

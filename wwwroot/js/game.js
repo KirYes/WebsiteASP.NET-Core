@@ -47,7 +47,7 @@ connection.on("RaceEnded", (finalTime) => {
 
 connection.start().then(function () {
     if (document.getElementById("start-button") !== null) {
-        document.getElementById("start-button").style.display = "block";
+        document.getElementById("start-button").style.display = "none";
     }
 }).catch(function (err) {
     return console.error(err.toString());
@@ -70,6 +70,10 @@ connection.on("Leave", function (message, count) {
     console.log(message);
 }
 );
+connection.on("StartG", function () {
+    console.log("Game started");
+
+});
 
 //connection.on("Send", (groupName) => {
 //    console.log(`Joined group: ${groupName}`);

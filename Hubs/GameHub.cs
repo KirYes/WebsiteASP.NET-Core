@@ -69,12 +69,20 @@ UserName = Context.User.Identity.Name
             //_context.Users.Attach(user);
             var user = _context.Users
          .FirstOrDefault(u => u.UserName == Context.User.Identity.Name);
+            if (room.Users.Count >= 2)
+            {
+                return;
+            }
             room.Users.Add(user);
             _context.SaveChanges();
             int userCount = room.Users.Count;
             string count = userCount.ToString();
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
             await Clients.Group(groupName).SendAsync("Join", $"{Context.ConnectionId} has joined the group {groupName}.", count);
+            if(userCount ==2)
+            {
+                await Clients.Group(groupName).SendAsync("StartG");
+            }
         }
 
     }

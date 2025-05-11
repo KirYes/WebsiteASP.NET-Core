@@ -8,15 +8,17 @@
 	<div id="race">
 		@if (User.Identity.IsAuthenticated)
 		{
-			<button id="start-button" onclick="joinGroup('group1')">Start race</button>
+			<button style="display: none;" id="start-button" onclick="joinGroup('group1')">Start race</button>
+			<hr />
 			<div accesskey="$0" id="group2" class="grou">
-				<h2>Group 2</h2>
+				<h2 style="font-size: 27px; margin:0;">Group 2</h2>
 				<div id="end" class="end">
-			<button class="grouch" onclick="joinGroup('group2')">Join group</button>
+			<button class="grouch" id="join" onclick="joinGroup('group2')">Join group</button>
 					<button class="grouch" onclick="leaveFromGroup('group2')">Leave group</button>
 			</div>
 			</div>
-			<button class="grou" onclick="joinGroup('group3')">Start race</button>
+			<hr />
+			<button style="display: none;" class="grou" onclick="joinGroup('group3')">Start race</button>
 		}
 		else{
 			<div id="login-overlay">
