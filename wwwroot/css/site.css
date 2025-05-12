@@ -67,7 +67,22 @@ section {
 .grouch{
     margin: 5px;
 }
+.container{
+    width: 100%;
+}
 
+.row.p-1{
+    width: 100%;
+}
+.col-6{
+    width: 100%;
+}
+#messageInput{
+    width: 100%;
+}
+.col-5 {
+    width: 100%;
+}
 .end {
     display: flex;
     flex-direction: row;
@@ -83,7 +98,7 @@ section {
 #messagesList {
     display: flex;
     flex-direction: column;
-    width: 100vh;
+    width: 100%;
     background-color: #101010;
     padding: 20px;
     border-radius: 50px;

@@ -78,10 +78,10 @@ UserName = Context.User.Identity.Name
             int userCount = room.Users.Count;
             string count = userCount.ToString();
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Group(groupName).SendAsync("Join", $"{Context.ConnectionId} has joined the group {groupName}.", count);
+            await Clients.All.SendAsync("Join", $"{Context.ConnectionId} has joined the group {groupName}.", count);
             if(userCount ==2)
             {
-                await Clients.Group(groupName).SendAsync("StartG");
+                await Clients.Group(groupName).SendAsync("StartG", groupName);
             }
         }
 
@@ -104,7 +104,7 @@ UserName = Context.User.Identity.Name
             _context.SaveChanges();
             int userCount = room.Users.Count;
             string count = userCount.ToString();
-            await Clients.Group(groupName).SendAsync("Leave", $"{Context.ConnectionId} has left the group {groupName}.", count);
+            await Clients.All.SendAsync("Leave", $"{Context.ConnectionId} has left the group {groupName}.", count);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
     }
@@ -118,5 +118,10 @@ UserName = Context.User.Identity.Name
         {
             await Clients.Group(groupName).SendAsync("StartGame", $"{Context.ConnectionId} has started the game.");
         }
+    }
+
+    public async Task DrawGame(object ctx, string groupName)
+    {
+        await Clients.Group(groupName).SendAsync("Dra",ctx);
     }
 }

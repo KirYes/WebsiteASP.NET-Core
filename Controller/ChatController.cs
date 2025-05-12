@@ -33,7 +33,7 @@ namespace WebApplication2.Controllers
             {
                 var messages = await _context.Messages
                             .OrderByDescending(m => m.Timestamp)
-                            .Take(100)
+                            .Take(5)
                             .ToListAsync();
                 return Ok(messages);
             }
