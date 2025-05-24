@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\three.js-master\.github\renovate.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Azure.AI.OpenAI" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.0" />
@@ -23,6 +27,21 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\js\signalr\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\three.js-master\.github\codeql-config.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\CODE_OF_CONDUCT.md" />
+    <None Include="wwwroot\js\three.js-master\.github\CONTRIBUTING.md" />
+    <None Include="wwwroot\js\three.js-master\.github\FUNDING.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\ISSUE_TEMPLATE\bug_report.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\ISSUE_TEMPLATE\config.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\ISSUE_TEMPLATE\feature_request.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\pull_request_template.md" />
+    <None Include="wwwroot\js\three.js-master\.github\workflows\ci.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\workflows\codeql-code-scanning.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\workflows\read-size.yml" />
+    <None Include="wwwroot\js\three.js-master\.github\workflows\report-size.yml" />
   </ItemGroup>
 
 </Project>
