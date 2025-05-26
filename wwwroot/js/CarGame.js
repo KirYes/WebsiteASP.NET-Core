@@ -1,7 +1,79 @@
+var connection = new window.signalR.HubConnectionBuilder().withUrl("/gameHub").build();
+
 import * as THREE from './three.js-master/build/three.module.js';
 import { GLTFLoader } from './three.js-master/examples/jsm/loaders/GLTFLoader.js';
 import * as CANNON from 'https://cdn.skypack.dev/cannon-es'; 
 
+//Disable the send button until connection is established.
+if (document.getElementById("start-button") !== null) {
+    document.getElementById("start-button").style.display = "none";
+}
+if (document.getElementById("end") !== null) {
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('/api/Count/count')
+            .then(response => response.json())
+            .then(data => {
+                const end = document.getElementById("end");
+                const ps = document.createElement("p");
+                ps.id = "count";
+                ps.textContent = `${data}/2`;
+                end.appendChild(ps);
+            });
+    });
+}
+connection.start().then(function () {
+    if (document.getElementById("start-button") !== null) {
+        document.getElementById("start-button").style.display = "none";
+    }
+}).catch(function (err) {
+    return console.error(err.toString());
+});
+
+document.getElementById("join").addEventListener("click", () => {
+    joinGroup('group2');
+});
+document.getElementById("leave").addEventListener("click", () => {
+    leaveFromGroup('group2');
+});
+function joinGroup(groupName) {
+    connection.invoke("AddToGroup", groupName).catch(err => console.error(err.toString()));
+}
+connection.on("Join", function (message, count) {
+
+    var ps = document.getElementById("count");
+    ps.textContent = `${count}/2`;
+    console.log(message);
+}
+);
+function leaveFromGroup(groupName) {
+    connection.invoke("RemoveFromGroup", groupName).catch(err => console.error(err.toString()));
+}
+connection.on("Leave", function (message, count) {
+
+    var ps = document.getElementById("count");
+    ps.textContent = `${count}/2`;
+    console.log(message);
+}
+);
+
+connection.on("StartG", function (groupName) {
+    console.log("Game started");
+    startGame(groupName);
+});
+
+if (document.getElementById("start-button") !== null) {
+    document.getElementById("start-button").addEventListener("click", () => {
+        connection.invoke("AddToGroup", "RaceGroup").catch(err => console.error(err));
+        var h1 = document.createElement("h1");
+        document.getElementById("race").appendChild(h1);
+        h1.textContent = RaceGroup.count;
+        //document.getElementById("timer").style.opacity = 1;
+        //document.getElementById("start-button").style.display = "none";
+        //connection.invoke("PlayerReady").catch(err => console.error(err));
+    });
+}
+
+function startGame(name) { 
 // Create a scene
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
@@ -114,91 +186,143 @@ const material = new THREE.MeshStandardMaterial({
 // we use it to control the camera with mouse
 // const controls = new OrbitControls( camera, renderer.domElement );
 // controls.enableDamping = true; // an effect that makes the camera move smoothly
-// controls.enabled = false;
+    // controls.enabled = false;
 
 //create our car object(mesh) as a group
 // we use it to group our car model and its children
-// so we can move it as a whole
-const car = new THREE.Group();
-let vehicle, chassisBody;
-const wheelVisuals = [];
+    // so we can move it as a whole
+    const players = {};
 
-gltfLoader.load(url, (gltf) => {
-    const model = gltf.scene;
-    const wheels = [];
-      const frontWheelL = model.getObjectByName('FrontWheelL');
-    const frontWheelR = model.getObjectByName('FrontWheelR');
-    const backWheelL = model.getObjectByName('BackWheelL');
-    const backWheelR = model.getObjectByName('BackWheelR');
-    wheels.push(frontWheelL, frontWheelR, backWheelL, backWheelR);
-    backWheelL.parent.remove(backWheelL);
-    backWheelR.parent.remove(backWheelR);
-    frontWheelL.parent.remove(frontWheelL);
-    frontWheelR.parent.remove(frontWheelR);
-    // backWheelGroup.parent.remove(backWheelR);
-    //load the car material
-    model.traverse((child) => {
-        if (child.isMesh) {
-            child.material = material;
-            child.castShadow = true;
-            child.receiveShadow = true;
-        }
+    function createPlayer(playerId) {
+        return new Promise((resolve) => {
+            gltfLoader.load(url, (gltf) => {
+                const car = new THREE.Group();
+                const wheelVisuals = [];
+                let chassisBody;
+                let vehicle;
+
+                const model = gltf.scene;
+                const wheels = [
+                    model.getObjectByName('FrontWheelL'),
+                    model.getObjectByName('FrontWheelR'),
+                    model.getObjectByName('BackWheelL'),
+                    model.getObjectByName('BackWheelR'),
+                ];
+                wheels.forEach(w => w.parent.remove(w));
+
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.material = material;
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                let xe = Math.random() * 15;
+                car.add(model);
+                car.position.set(xe, 2, 0);
+                car.rotation.set(0, 0, 0);
+                scene.add(car);
+
+                const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 2));
+                chassisBody = new CANNON.Body({ mass: 150 });
+                chassisBody.addShape(chassisShape);
+                chassisBody.position.set(xe, 2, 0);
+                world.addBody(chassisBody);
+
+                vehicle = new CANNON.RaycastVehicle({
+                    chassisBody: chassisBody,
+                    indexRightAxis: 0,
+                    indexUpAxis: 1,
+                    indexForwardAxis: 2,
+                });
+
+                const wheelOptions = {
+                    radius: 0.4,
+                    directionLocal: new CANNON.Vec3(0, -1, 0),
+                    suspensionStiffness: 30,
+                    suspensionRestLength: 0.3,
+                    frictionSlip: 5,
+                    dampingRelaxation: 2.3,
+                    dampingCompression: 4.4,
+                    maxSuspensionForce: 100000,
+                    rollInfluence: 0.01,
+                    axleLocal: new CANNON.Vec3(-1, 0, 0),
+                    chassisConnectionPointLocal: new CANNON.Vec3(),
+                    maxSuspensionTravel: 0.3,
+                    customSlidingRotationalSpeed: -30,
+                    useCustomSlidingRotationalSpeed: true,
+                };
+
+                wheels.forEach((wheel) => {
+                    const worldPos = new THREE.Vector3();
+                    wheel.getWorldPosition(worldPos);
+                    model.worldToLocal(worldPos);
+                    const localPos = new CANNON.Vec3(worldPos.x + xe, worldPos.y + 2.23, worldPos.z);
+                    wheelOptions.chassisConnectionPointLocal = localPos.clone();
+                    vehicle.addWheel(wheelOptions);
+                });
+
+                vehicle.addToWorld(world);
+
+                for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+                    const wheelMesh = wheels[i].clone();
+                    scene.add(wheelMesh);
+                    wheelVisuals.push(wheelMesh);
+                }
+
+                const player = {
+                    car,
+                    vehicle,
+                    chassisBody,
+                    wheelVisuals
+                };
+                players[playerId] = player;
+                resolve(player); 
+            });
+        });
+    }
+    const carId = connection.connectionId;
+  
+    (async () => {
+        const player = await createPlayer(carId);
+
+        const playerData = {
+            position: {
+                x: player.chassisBody.position.x,
+                y: player.chassisBody.position.y,
+                z: player.chassisBody.position.z
+            },
+            rotation: {
+                x: player.chassisBody.quaternion.x,
+                y: player.chassisBody.quaternion.y,
+                z: player.chassisBody.quaternion.z,
+                w: player.chassisBody.quaternion.w
+            }
+        };
+
+        connection.invoke("AddPlayer", playerData, carId, name);
+    })();
+
+   
+    connection.on("UpdatePlayers", async function (playerData, carId) {
+        if (players[carId]) return;
+
+        const player = await createPlayer(carId);
+
+        player.chassisBody.position.set(
+            playerData.position.x,
+            playerData.position.y,
+            playerData.position.z
+        );
+
+        player.chassisBody.quaternion.set(
+            playerData.rotation.x,
+            playerData.rotation.y,
+            playerData.rotation.z,
+            playerData.rotation.w
+        );
     });
-    car.add(model);
-    car.position.set(0, 2, 0);
-    car.rotation.set(0, 0, 0);
-    scene.add(car);
-
-    const chassisShape = new CANNON.Box(new CANNON.Vec3(1, 0.5, 2));
-    chassisBody = new CANNON.Body({ mass: 150 });
-    chassisBody.addShape(chassisShape);
-    chassisBody.position.set(0, 2, 0);
-    world.addBody(chassisBody);
-
-    // Setup vehicle
-    vehicle = new CANNON.RaycastVehicle({
-        chassisBody,
-        indexRightAxis: 0,
-        indexUpAxis: 1,
-        indexForwardAxis: 2,
-    });
-
-    const wheelOptions = {
-        radius: 0.4,
-        directionLocal: new CANNON.Vec3(0, -1, 0),
-        suspensionStiffness: 30,
-        suspensionRestLength: 0.3,
-        frictionSlip: 5,
-        dampingRelaxation: 2.3,
-        dampingCompression: 4.4,
-        maxSuspensionForce: 100000,
-        rollInfluence: 0.01,
-        axleLocal: new CANNON.Vec3(-1, 0, 0),
-        chassisConnectionPointLocal: new CANNON.Vec3(),
-        maxSuspensionTravel: 0.3,
-        customSlidingRotationalSpeed: -30,
-        useCustomSlidingRotationalSpeed: true,
-    };
-
-       wheels.forEach((wheel) => {
-        const worldPos = new THREE.Vector3();
-        wheel.getWorldPosition(worldPos);
-        model.worldToLocal(worldPos); // convert to local model space
-        const localPos = new CANNON.Vec3(worldPos.x, worldPos.y+2.23, worldPos.z);
-        wheelOptions.chassisConnectionPointLocal = localPos.clone();
-        vehicle.addWheel(wheelOptions);
-    });
-
-    vehicle.addToWorld(world);
-
-    for(let i=0; i<vehicle.wheelInfos.length; i++){
-      const wheelMesh = wheels[i].clone();
-        scene.add(wheelMesh);
-        wheelVisuals.push(wheelMesh);
-    };
-});
-
-
 
 
 // create an array to detect the keys pressed
@@ -243,7 +367,8 @@ window.addEventListener('keyup', (event) => {
 // }
 
 // and update the camera position and rotation depending on the car position and rotation
-function updateCameraPosition() {
+    function updateCameraPosition() {
+        const { car } = players[carId]; 
     if (!car){
         return;
     }
@@ -256,7 +381,9 @@ function updateCameraPosition() {
     camera.lookAt(car.position);
 }
 
-function handleVehicleControls() {
+    function handleVehicleControls() {
+        const { vehicle } = players[carId]; 
+
     if (!vehicle) return;
 
     const maxForce = 500;
@@ -286,7 +413,38 @@ function handleVehicleControls() {
         vehicle.setSteeringValue(0, 1);
     }
 
-}
+    }
+
+    function sendPlayerTransform() {
+        const player = players[carId];
+        if (!player || !player.chassisBody) return;
+
+        const pos = player.chassisBody.position;
+        const rot = player.chassisBody.quaternion;
+        const upd = {
+            position: { x: pos.x, y: pos.y, z: pos.z },
+            rotation: { x: rot.x, y: rot.y, z: rot.z, w: rot.w }
+        }
+        connection.invoke("UpdatePlayerTransform", upd, carId, name);
+    }
+    connection.on("ReceiveTransform", async function (upd, carId) { 
+        const player = players[carId];
+        if (!player || !player.chassisBody) return;
+
+        player.chassisBody.position.set(
+            upd.position.x,
+            upd.position.y,
+            upd.position.z
+        );
+
+        player.chassisBody.quaternion.set(
+            upd.rotation.x,
+            upd.rotation.y,
+            upd.rotation.z,
+            upd.rotation.w
+        );
+    });
+
 // this function is called every frame
 //animate the scene function that renders the scene
 // and updates the camera position and car position
@@ -300,16 +458,19 @@ function animate(time) {
     lastTime = time;
     world.step(1 / 60, delta, 3);
     handleVehicleControls();
-     if (car && chassisBody) {
+    for (const id in players) {
+        const { car, chassisBody, vehicle, wheelVisuals } = players[id];
+        if (!car || !chassisBody || !vehicle) continue;
         car.position.copy(chassisBody.position);
         car.quaternion.copy(chassisBody.quaternion);
-                 for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+        for (let i = 0; i < vehicle.wheelInfos.length; i++) {
             vehicle.updateWheelTransform(i);
             const t = vehicle.wheelInfos[i].worldTransform;
             wheelVisuals[i].position.copy(t.position);
             wheelVisuals[i].quaternion.copy(t.quaternion);
         }
     }
+    sendPlayerTransform();
    updateCameraPosition();
 //    checkColission();
    renderer.render(scene, camera);
@@ -323,3 +484,5 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
+}

@@ -8,17 +8,17 @@
 	<div id="race">
 		@if (User.Identity.IsAuthenticated)
 		{
-			<button style="display: none;" id="start-button" onclick="joinGroup('group1')">Start race</button>
+			<button style="display: none;" id="start-button" >Start race</button>
 			<hr />
 			<div accesskey="$0" id="group2" class="grou">
 				<h2 style="font-size: 27px; margin:0;">Group 2</h2>
 				<div id="end" class="end">
-			<button class="grouch" id="join" onclick="joinGroup('group2')">Join group</button>
-					<button class="grouch" id="leave" style="display: block;" onclick="leaveFromGroup('group2')">Leave group</button>
+			<button class="grouch" id="join" >Join group</button>
+					<button class="grouch" id="leave" style="display: block;">Leave group</button>
 			</div>
 			</div>
 			<hr />
-			<button style="display: none;" class="grou" onclick="joinGroup('group3')">Start race</button>
+			<button style="display: none;" class="grou" >Start race</button>
 		}
 		else{
 			<div id="login-overlay">
@@ -29,5 +29,10 @@
 		</div>
 	</section>
 
-<script src="~/js/signalr/dist/browser/signalr.js"></script>
-<script src="~/js/game.js"></script>
+<script src="@Url.Content("~/js/signalr/dist/browser/signalr.js")"></script>
+
+@* <script src="~/js/game.js"></script> *@
+@* <script src="~/js/three.js-master/build/three.module.js" type="module"></script>
+<script src="~/js/three.js-master/examples/jsm/loaders/GLTFLoader.js" type="module"></script>
+<script src="https://cdn.skypack.dev/cannon-es" type="module"></script> *@
+<script src="@Url.Content("~/js/CarGame.js")" type="module"></script>

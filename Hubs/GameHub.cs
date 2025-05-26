@@ -124,4 +124,13 @@ UserName = Context.User.Identity.Name
     {
         await Clients.Group(groupName).SendAsync("Dra",ctx);
     }
+
+    public async Task AddPlayer(object playerData,string carId, string groupName)
+    {
+        await Clients.OthersInGroup(groupName).SendAsync("UpdatePlayers", playerData, carId);
+    }
+    public async Task UpdatePlayerTransform(object upd, string carId, string groupName)
+    {
+        await Clients.OthersInGroup(groupName).SendAsync("ReceiveTransform", upd, carId);
+    }
 }
