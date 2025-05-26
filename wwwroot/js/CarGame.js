@@ -368,7 +368,9 @@ window.addEventListener('keyup', (event) => {
 
 // and update the camera position and rotation depending on the car position and rotation
     function updateCameraPosition() {
-        const { car } = players[carId]; 
+        const player = players[carId];
+        if (!player || !player.car) return;
+        const { car } = player;
     if (!car){
         return;
     }
@@ -382,8 +384,10 @@ window.addEventListener('keyup', (event) => {
 }
 
     function handleVehicleControls() {
-        const { vehicle } = players[carId]; 
+        const player = players[carId];
+        if (!player || !player.vehicle) return;
 
+        const { vehicle } = player;
     if (!vehicle) return;
 
     const maxForce = 500;
